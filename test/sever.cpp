@@ -154,6 +154,8 @@ int StartServer(int currentFD)
 		return -1;
 	};
 
+	cout << "sever is On the way" << endl;
+
 	// 당신은 모든 시련을 
 	return 1;
 }
