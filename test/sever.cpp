@@ -57,7 +57,8 @@ int main()
 	// 0번째 유저를 리슨소켓으로 사용할 겁니다!
 	struct pollfd& ListenFD = pollFDArray[0];
 	
-	
+	//현재 유저 수
+	unsigned int currentUserNumber = 0;
 	
 	//					IPv4(4바이트짜리 IP) 
 	ListenFD.fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -81,7 +82,12 @@ int main()
 		//poll에 대해서 말씀을 뜨릴때! 누군가 저한테 메시지를 전달했을 때 실행!
 		// 0번까지도 폴에 넣어서 리슨 소켓에 대답이 있을 때에도 들어갈 수 있게 위에서 설정해줬어요!
 		int result = poll(pollFDArray, MAX_USER_NUMBER, -1);
-		
+
+		// 연결을 시도하고 싶어하는 소켓을 새로 준비합니다! 새로운 공간을 만들기 위한 공간?
+		struct socketaddr_in connectSocket;
+		// 연결하고자하는 소켓에 주소 사이즈
+		struct socketlen_t addressSize;
+
 		//누가 부르는데요? 0이면 아무도 대답안했다! 15라고하면, 15명이 부른다!
 		if (result > 0)
 		{
@@ -89,9 +95,35 @@ int main()
 			//누군가 접속을 시도하고 있습니다.
 			if (ListenFD.revents == POLLIN)
 			{
-				cout << "누군가의 반응 식별!" << endl;
+				cout << "Someone Connected!" << endl;
+				//저희는 서버죠! 서버는용 누군가 올라오고 싶다면 밴된 아이피가 아니라고 한다면야.. 다 받아줘야 합니다.
+				int currentFD = accept(ListenFD, (struct sockaddr*)&connectSocket, &addressSize);
+
+				//0번을 리슨 소켓으로 쓰고 잇어서 전체 유저 수를 -1한 상태에서 비교할게요!
+				if (currentUserNumber < MAX_USER_NUMBER - 1)
+				{
+					// 0은 리슨 소켓이니까!
+					for (int i = 1; i < MAX_USER_NUMBER; i++)
+					{
+						//비어 있는 pollFD를 찾는 거에요!
+						if (pollFDArray[i] == -1)
+						{
+							//지금 연결할ㄴ 소켓의 File Descriptor를 받아오기!
+							pollFDArray[i].fd = currentFD;
+							pollFDArray[i].events = POLLIN;
+							pollFDArray[i].revents = 0;
+
+							cout << "Connected " << i << endl;
+
+							//새로 한명 추가
+							++currentUserNumber;
+							// 할건 했으니까 쉬어라!
+							break;
+						};
+					};
+				};
 			};
-		}
+		};
 	};
 
 	//리슨 소켓 닫고
