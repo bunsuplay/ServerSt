@@ -106,7 +106,7 @@ int main()
 					for (int i = 1; i < MAX_USER_NUMBER; i++)
 					{
 						//비어 있는 pollFD를 찾는 거에요!
-						if (pollFDArray[i] == -1)
+						if (pollFDArray[i].fd == -1)
 						{
 							//지금 연결할ㄴ 소켓의 File Descriptor를 받아오기!
 							pollFDArray[i].fd = currentFD;
