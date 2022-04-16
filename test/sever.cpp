@@ -58,9 +58,9 @@ int main()
 	struct pollfd& ListenFD = pollFDArray[0];
 
 	// 받은 내용을 저장하는 공간(버퍼)
-	char buffRecv[MAX_BUFFER_SIZE]; = { 0 };
+	char buffRecv[MAX_BUFFER_SIZE] = { 0 };
 	// 보낼 내용을 저장하는 공간(버퍼)
-	char buffSend[MAX_BUFFER_SIZE]; = { 0 };
+	char buffSend[MAX_BUFFER_SIZE] = { 0 };
 	
 	//현재 유저 수
 	unsigned int currentUserNumber = 0;
