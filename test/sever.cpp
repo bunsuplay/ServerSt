@@ -123,6 +123,40 @@ int main()
 					};
 				};
 			};
+
+			// 이 위쪽은 접속 관리하는 리슨 소켓 내용이었구요
+			// 아래에서는 다른 일반 유저들을 관리하는 부분이 필요할 거에요!
+			for (int i = 1; i < MAX_USER_NUMBER; i++)
+			{
+				//대상이 전달해준 반응
+				switch (pollFDArray[i].revents)
+				{
+					//대상 반응 없음
+				case 0: break;
+					//무언가 반응 있음
+				case POLLIN:
+					// 무슨 반응이였는지를 확인해봐야겠죠!
+					//							읽기 버퍼				  연결 해제 요청!
+					if (read(pollFDArray[i].fd, buffRecv, MAX_BUFFER_SIZE) < 1)
+					{
+						// 꺼달라고하는데 뭐 ㅎ
+						EndFD(&pollFDArray[i]);
+						break;
+					};
+
+					//꺼달라고 하는게 아니고 다른 걸 부탁했을 때 여기에서 메시지를 처리할 필요가 있구요
+
+					// 입력 버퍼 초기화
+					memset(buffRecv, 0, sizeof(buffRecv));
+					//입력 해결해줬으니까  더 내용이 없다.
+					pollFDArray[i].revents = 0;
+					break;
+					// 이상한 값이 들어온 상태!
+				default:
+					EndFD(&pollFDArray[i]);
+					break;
+				};
+			};
 		};
 	};
 
@@ -166,7 +200,7 @@ int StartServer(int currentFD)
 	//포트까지 적어주어야 했었죠?
 	address.sin_port = htons(SEVER_PORT);
 
-	// 주소가 여기에요 로 끝난다면 서버가 실해잉 안될 거에요! 저장만 한 것이요!
+	// 주소가 여기에요 로 끝난다면 서버가 실해이 안될 거에요! 저장만 한 것이요!
 	// 사용해서 서버를 만들어야 할 거니까
 	// 지금 설정한 주소를 소켓애다가 "묶어" 줄 거에요      
 	//                                                                실패!!
@@ -188,6 +222,18 @@ int StartServer(int currentFD)
 
 	cout << "sever is On the way" << endl;
 
-	// 당신은 모든 시련을 
+	// 당신은 모든 시련을 이겨내었습니다.
 	return 1;
+}
+
+void EndFD(struct pollfd* targetFD)
+{
+	//닫아주기
+	close(targetFD->fd);
+
+	// 닫았습니다. -1로 표시하기!
+	targetFD->fd = -1;
+	targetFD->revents = 0;
+
+	cout << "User Connection has Destroyed" << endl;
 }
