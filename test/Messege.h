@@ -1,3 +1,4 @@
+
 enum class MessageType
 {
 	chat,
@@ -34,7 +35,7 @@ void BroadCastMessage(char* message, int length, int sendFD = -1, bool sendSelf 
 	//        본인한테 보냄?  0명보냈다! : 1명 보냈놨다!
 
 	// 0번은 리슨 소켓!  최대치까지 갔거나 ,또는   현재 유저 수만큼 보냈다면!
-	for (int i = 1; i < MAX_USER_NUMBER || send >= currentUserNumber; i++)
+	for (int i = 1; i < MAX_USER_NUMBER; i++) // || send >= currentUserNumber; i++
 	{
 		// 본인한테 안 보낼거임! 이라고 할때 밥아온 정보가 있다면 넘어가기!
 		if (!sendSelf && i == sendFD) continue;
@@ -44,10 +45,12 @@ void BroadCastMessage(char* message, int length, int sendFD = -1, bool sendSelf 
 			// 서버가 무언가 보낼 때 "적어 주는 거"에요 그래서 wirte라고 부르고
 			// 받을 때에는 Read하겠죠?
 			//    대상의  소켓       메시지,     길이
-			write(pollFDArray[i].fd, message, length);
+			if (write(pollFDArray[i].fd, message, length))
+			{
+				//보냈다!
+				if (++send >= currentUserNumber) return;
+			}
 
-			//보냈다!
-			++send;
 		};
 	}
 }
