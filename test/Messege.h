@@ -49,8 +49,9 @@ void BroadCastMessage(char* message, int length, int sendFD = -1, bool sendSelf 
 			{
 				//º¸³Â´Ù!
 				if (++send >= currentUserNumber) return;
-			}
+			};
 
 		};
-	}
+	};
+	cout << "Message Send To" << send << "User : " << message << endl;
 }
