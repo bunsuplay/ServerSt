@@ -48,7 +48,7 @@ void BroadCastMessage(char* message, int length, int sendFD = -1, bool sendSelf 
 			if (write(pollFDArray[i].fd, message, length))
 			{
 				//º¸³Â´Ù!
-				if (++send >= currentUserNumber) return;
+				if (++send >= currentUserNumber) break;
 			};
 
 		};
