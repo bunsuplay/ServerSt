@@ -101,8 +101,6 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo i
 	//메모리 중에서 제가 처리해야하는 메모리까지만!
 	char* target = new char[currentLength];
 
-	if (target == nullptr) cout << "???" <<  endl;
-
 	memcpy(target, message, currentLength);
 	
 	// 타입에 따라 다른행동
