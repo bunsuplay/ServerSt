@@ -8,16 +8,32 @@ enum class MessageType
 	Length,// 제가 가진 메시지 타입의 개수보다 더 많은 내요잉 들어오면 무시!
 };
 
-void SeparateMessage()
+// 통합! 이라고 하는 것이죠!\
+// Struct랑 비슷하게 쓰실 수 있습니다.
+// 차이점이 무었이냐? 하나의 메모리를 여러가지 자료형이 공유해요!
+
+//[0][0][0][10]
+//			10 int
+//			\n	char[i]
+union ConvertionBase
 {
+	unsigned int uInteger;
+	int integer;
 
-}
+	float floating;
 
-void translateMessage()
+	char character[4];
+
+	short shortInteger[2];
+	unsigned short ushortInteger[2];
+};
+ConvertionBase byteConvertor;
+
+struct MessageInfo
 {
-
-}
-
+	MessageType type;
+	int length;
+};
 //                                                 본인에게 보내기는 기본적으로 true에요!
 //												그럼뭐.. 체크안해도 되겠죠!
 //												체크하려면 FD가 설정되어야 되니까!\
@@ -56,4 +72,54 @@ void BroadCastMessage(char* message, int length, int sendFD = -1, bool sendSelf 
 		};
 	};
 	cout << "Message Send To " << send << " User : " << message << endl;
+}
+
+//메시지를 구분하는 용도					길이 받을 int주세요!
+MessageInfo ProcessMessage(char input[4])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		byteConvertor.character[i] = input[i];
+
+	}
+	// 메시지타입    길이
+	// [][]			[][]
+
+	MessageInfo result;
+
+	result.type =  (MessageType)byteConvertor.shortInteger[0]; // 타입도 돌려주기
+	result.length =  byteConvertor.shortInteger[1] +4; // 길이를 주고
+
+	return result;
+}
+
+int translateMessage(int formFD, char* message, int messageLength ,MessageInfo info)
+{
+	//전체 길이와 메시지 길이 둘 중에 작은 값으로!
+	int currentLength = min(messageLength, info.length);
+	
+	//메모리 중에서 제가 처리해야하는 메모리까지만!
+	char* target = new char[currentLength];
+	memcpy(target, message, currentLength);
+	
+	// 타입에 따라 다른행동
+	switch (info.type)
+	{
+	case MessageType::chat:
+		BroadCastMessage(target, currentLength, formFD);
+		break;
+	case MessageType::LogIn:
+		break;
+	case MessageType::LogOut:
+		break;
+	default:
+		break;
+	}
+
+	//사실 메시지같은 경우는 하나씩 보내면 조금 효율이 떨어집니다.
+	// 보낼 수 있을 때 여러개를 같이 보내는 게 좋습니다.
+	// 모아두었다가 보내는 개념!
+	// 전체 메시지 길이 - 지금 확인한 메시지 길이
+	// 아직 뒤에 메시지가 더 있어요! 라고 하는 걸 확인할 수 있죠!
+	return messageLength = info.length;
 }

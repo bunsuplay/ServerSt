@@ -120,12 +120,23 @@ int main()
 						//비어 있는 pollFD를 찾는 거에요!
 						if (pollFDArray[i].fd == -1)
 						{
+							// 이건 뭐지? 누가 있네?
+							if (userArray[i] != nullptr)
+							{
+								//저번에 혹시 안지워진 경우일 수 있어저 지워버리고 갈게요!
+								delete userArray[i];
+							}
+
 							//지금 연결할ㄴ 소켓의 File Descriptor를 받아오기!
 							pollFDArray[i].fd = currentFD;
 							pollFDArray[i].events = POLLIN;
 							pollFDArray[i].revents = 0;
 
+							//유저를 새로 만들어주도록 합시다!
+							userArray[i] = new User(i);
+
 							cout << "Connected " << i << endl;
+
 
 							//새로 한명 추가
 							++currentUserNumber;
@@ -147,6 +158,7 @@ int main()
 				case 0: break;
 					//무언가 반응 있음
 				case POLLIN:
+				{
 					// 무슨 반응이였는지를 확인해봐야겠죠!
 					//							읽기 버퍼				  연결 해제 요청!
 					if (read(pollFDArray[i].fd, buffRecv, MAX_BUFFER_SIZE) < 1)
@@ -157,7 +169,24 @@ int main()
 					};
 
 					//꺼달라고 하는게 아니고 다른 걸 부탁했을 때 여기에서 메시지를 처리할 필요가 있구요
-					BroadCastMessage(buffRecv, sizeof(buffRecv));
+					//BroadCastMessage(buffRecv, sizeof(buffRecv));
+					int leftSize = sizeof(buffRecv);
+					int checkSize = 0;
+					while (leftSize > 0)
+					{
+						// 지금 까지 체크된 칸 다음부터 0 1 2 3
+						char header[4];
+						header[0] = buffRecv[0 + checkSize];
+						header[1] = buffRecv[1 + checkSize];
+						header[2] = buffRecv[2 + checkSize];
+						header[3] = buffRecv[3 + checkSize];
+
+						//					움직이면서 보는 것이죠!
+						int currentSize = translateMessage(i, buffRecv + checkSize, leftSize, ProcessMessage(header));
+
+						checkSize += currentSize;
+						leftSize -= currentSize;
+					};
 
 					// 입력 버퍼 초기화
 					memset(buffRecv, 0, sizeof(buffRecv));
@@ -165,6 +194,7 @@ int main()
 					pollFDArray[i].revents = 0;
 					break;
 					// 이상한 값이 들어온 상태!
+				}
 				default:
 					EndFD(&pollFDArray[i]);
 					break;
