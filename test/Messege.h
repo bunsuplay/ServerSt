@@ -23,7 +23,7 @@ void SendMessage(char* massage, int length, int sendFD)
 {
 	// 서버가 무언가 보낼 때 "적어 주는 거"에요 그래서 wirte라고 부르고
 	// 받을 때에는 Read하겠죠?
-	wirte(sendFD, massage, length);
+	write(sendFD, massage, length);
 }
 
 //                                                 본인에게 보내기는 기본적으로 true에요!
@@ -64,7 +64,7 @@ void BroadCastMessage(char* message, int length, int sendFD = -1, bool sendSelf 
 }
 
 //메시지를 구분하는 용도  	길이 받을 int주세요!   이걸 준 유저
-MessageInfo ProcessMessage(char* input, int userIndex)
+MessageInfo* ProcessMessage(char* input, int userIndex)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -91,10 +91,10 @@ MessageInfo ProcessMessage(char* input, int userIndex)
 	return result;
 }
 
-int translateMessage(int formFD, char* message, int messageLength ,MessageInfo info)
+int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* info)
 {
 	//전체 길이와 메시지 길이 둘 중에 작은 값으로!
-	int currentLength = min(messageLength, info.length);
+	int currentLength = min(messageLength, info->length);
 	
 	//메모리 중에서 제가 처리해야하는 메모리까지만!
 	char* target = new char[currentLength];
@@ -102,15 +102,15 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo i
 	memcpy(target, message, currentLength);
 	
 	// 타입에 따라 다른행동
-	switch (info.type)
+	switch (info->type)
 	{
 	case MessageType::chat:
 		BroadCastMessage(target, currentLength, formFD);
 		cout << "Message Send To" << send << "User : " << target +4<< endl;
 		break;
 	case MessageType::LogIn:
-		MessageInfo_LogIn loginInfo = (MessageInfo_LogIn)info;
-		if(userArray[formFD]->SetLogIn(loginInfo.name));
+		MessageInfo_LogIn* loginInfo = (MessageInfo_LogIn*)info;
+		if(userArray[formFD]->SetLogIn(loginInfo->name));
 		{
 			BroadCastMessage(target, currentLength, formFD);
 		};
