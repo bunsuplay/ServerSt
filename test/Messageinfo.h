@@ -28,7 +28,7 @@ enum class MessageType
 	LogOut,
 	chat,
 
-	Length,// 제가 가진 메시지 타입의 개수보다 더 많은 내요잉 들어오면 무시!
+	Length,// 제가 가진 메시지 타입의 개수보다 더 많은 내용 들어오면 무시!
 };
 
 
