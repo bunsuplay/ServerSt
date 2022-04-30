@@ -19,11 +19,12 @@ class MessageInfo
 	int length;
 };
 
-void SendMessage(char* massage, int length, int sendFD)
+bool SendMessage(char* massage, int length, int sendFD)
 {
 	// 서버가 무언가 보낼 때 "적어 주는 거"에요 그래서 wirte라고 부르고
 	// 받을 때에는 Read하겠죠?
 	write(sendFD, massage, length);
+	return true;
 }
 
 //                                                 본인에게 보내기는 기본적으로 true에요!
