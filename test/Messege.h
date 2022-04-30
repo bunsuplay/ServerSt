@@ -110,12 +110,14 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 		cout << "Message Send To" << send << "User : " << target +4<< endl;
 		break;
 	case MessageType::LogIn:
+	{
 		MessageInfo_LogIn* loginInfo = (MessageInfo_LogIn*)info;
-		if(userArray[formFD]->SetLogIn(loginInfo->name));
+		if (userArray[formFD]->SetLogIn(loginInfo->name));
 		{
 			BroadCastMessage(target, currentLength, formFD);
 		};
 		break;
+	}
 	case MessageType::LogOut:
 		break;
 	default:
