@@ -107,6 +107,7 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 		{
 			BroadCastMessage(target, currentLength, formFD);
 		};
+		cout << "Someone Try Login! Name is :" << loginInfo->name << "!!" << endl;
 		break;
 	}
 	case MessageType::LogOut:
