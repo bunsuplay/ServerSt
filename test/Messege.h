@@ -54,7 +54,7 @@ void BroadCastMessage(char* message, int length, int sendFD = -1, bool sendSelf 
 		if (pollFDArray[i].fd != -1)
 		{
 			//          메시지,     길이,       대상의 소켓
-			SendMessage(massage, length, pollFDArray[i].fd);
+			SendMessage(message, length, pollFDArray[i].fd);
 			
 			//보냈다!
 			if (++send >= currentUserNumber) break;
