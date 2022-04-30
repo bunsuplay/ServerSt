@@ -16,7 +16,7 @@ enum class MessageType
 class MessageInfo
 {
 	MessageType type;
-	short length;
+	int length;
 };
 
 void SendMessage(char* massage, int length, int sendFD)
