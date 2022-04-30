@@ -10,15 +10,6 @@ enum class MessageType
 
 
 
-
-
-
-class MessageInfo
-{
-	MessageType type;
-	int length;
-};
-
 bool SendMessage(char* massage, int length, int sendFD)
 {
 	// 서버가 무언가 보낼 때 "적어 주는 거"에요 그래서 wirte라고 부르고
