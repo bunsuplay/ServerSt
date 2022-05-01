@@ -125,7 +125,7 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 			sendResult[i] = byteConvertor.character[1];
 		}
 
-		if (userArray[formFD]->SetLogIn(loginInfo->name));
+		if (userArray[formFD]->SetLogIn(loginInfo->name))
 		{
 			cout << "Login Succsed" << endl;
 		}
