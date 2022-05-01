@@ -29,6 +29,9 @@ enum class MessageType
 	LogOut,
 	chat,
 
+
+	Unknown, // 서버 전용 모르겠다! 선언!
+
 	Length,// 제가 가진 메시지 타입의 개수보다 더 많은 내용 들어오면 무시!
 };
 
@@ -57,5 +60,25 @@ public:
 		userIndex = targetUser;
 		// 메시지의 4번째부터 내용을 넣어주도록 합시다!
 		name = &(message[4]);
+	}
+};
+
+class MessageInfo_Chat : public  MessageInfo
+{
+public:
+	int userIndex;
+	string value;
+public:
+	MessageInfo_Chat(char* message, int targetUser)
+	{
+		type = MessageType::chat;
+		//길이 부분의 두 개 확인!
+		//byteConvertor.character[0] = message[2];
+		//byteConvertor.character[1] = message[3];
+		//캐릭터 두 개를 읽어와서 그거를 숫자로 취급!
+		//length = byteConvertor.shortInteger[0];
+		userIndex = targetUser;
+		// 메시지의 4번째부터 내용을 넣어주도록 합시다!
+		value = &(message[4]);
 	}
 };
