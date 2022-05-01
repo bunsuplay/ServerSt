@@ -117,7 +117,7 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 		//[][] [][]  [][][][] []
 		char sendResult[9] = { 0 };
 
-		byteConvertor.shortInteger[0] = MessageType::LogIn;
+		byteConvertor.shortInteger[0] = (short)MessageType::LogIn;
 		byteConvertor.shortInteger[1] = 5;
 
 		for (int i = 0; i < 4; i++)
