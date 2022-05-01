@@ -112,7 +112,9 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 	}
 	case MessageType::LogOut:
 		break;
+	case MessageType::EndOfLine:
 	default:
+		return MAX_USER_NUMBER; //최대치까지 밀어서 그 뒤에 메시지가 더없다고 알려줍시다.
 		break;
 	}
 
