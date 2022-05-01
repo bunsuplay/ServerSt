@@ -96,7 +96,7 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 	//메모리 중에서 제가 처리해야하는 메모리까지만!
 	char* target = new char[currentLength];
 
-	//memcpy(target, message, currentLength);
+	memcpy(target, message, currentLength);
 	
 	// 타입에 따라 다른행동
 	switch (info->type)
@@ -104,7 +104,7 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 	case MessageType::chat:
 	{
 		MessageInfo_Chat* chatInfo = (MessageInfo_Chat*)info;
-
+		/*
 		memcpy(target + 10, message +4, currentLength -20);
 		byteConvertor.ushortInteger[0] = (short)MessageType::chat;
 		byteConvertor.ushortInteger[1] = currentLength;
@@ -127,7 +127,7 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 			};
 		};
 		target[19] = ':';
-
+		*/
 		BroadCastMessage(target, currentLength, formFD);
 		cout << "Message Send To" << send << "User : " << target + 4 << endl;
 		break;
