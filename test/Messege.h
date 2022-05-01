@@ -135,7 +135,7 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 			cout << "false Succesed" << endl;
 		}
 
-		SendMessage(sendResult, 9, formFD);
+		SendMessage(sendResult, 9,pollFDArray[formFD].fd);
 		break;
 	}
 	case MessageType::LogOut:
