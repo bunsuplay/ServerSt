@@ -111,11 +111,31 @@ int translateMessage(int formFD, char* message, int messageLength ,MessageInfo* 
 	case MessageType::LogIn:
 	{
 		MessageInfo_LogIn* loginInfo = (MessageInfo_LogIn*)info;
+		
+		cout << "Someone Try Login! Name is :" << loginInfo->name << "!!" << endl;
+		//           유저번호  성공여부
+		//[][] [][]  [][][][] []
+		char sendResult[9] = { 0 };
+
+		byteConvertor.shortInteger[0] = MessageType::LogIn;
+		byteConvertor.shortInteger[1] = 5;
+
+		for (int i = 0; i < 4; i++)
+		{
+			sendResult[i] = byteConvertor.character[1];
+		}
+
 		if (userArray[formFD]->SetLogIn(loginInfo->name));
 		{
-			BroadCastMessage(target, currentLength, formFD);
-		};
-		cout << "Someone Try Login! Name is :" << loginInfo->name << "!!" << endl;
+			cout << "Login Succsed" << endl;
+		}
+		else
+		{
+			sendResult[8] = 1;
+			cout << "false Succesed" << endl;
+		}
+
+		SendMessage(sendResult, 9, formFD);
 		break;
 	}
 	case MessageType::LogOut:
