@@ -106,7 +106,7 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		}
 
 		// 4칸를 추가를 해놓았기 때문에 4칸의 여유를 더 주도록 하겠습니다.
-		memcpy(sendResult + 8, message + 4, currentLength - 8);
+		memcpy(sendResult + 8, message + 4, currentLength - 4);
 		//              여기                               여기       두 개가 연관되는 개수기 때문에 맟춰줍니다.
 		/*
 		memcpy(target + 20, message + 4, currentLength - 20);
@@ -133,7 +133,7 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		target[19] = ':';*/
 		BroadCastMessage(sendResult, currentLength + 4, fromFD);
 
-		cout << "Message Send From " << userArray[fromFD]->GetName() << " : " << sendResult + 4 << endl;
+		cout << "Message Send From " << userArray[fromFD]->GetName() << " : " << sendResult + 8 << endl;
 		delete sendResult;
 		break;
 	}
