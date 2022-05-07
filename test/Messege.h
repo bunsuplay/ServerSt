@@ -78,9 +78,7 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 
 	//전체 길이와 하나의 메시지 길이 둘 중에 작은 값으로!
 	int currentLength = min(messageLength, info->length);
-	//메모리 중에서 제가 처리해야하는 메모리까지만!
-	char* target = new char[currentLength];
-	memcpy(target, message, currentLength);
+	
 
 	//타입에 따라 다른 행동!
 	switch (info->type)
@@ -88,6 +86,28 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 	case MessageType::Chat:
 	{
 		MessageInfo_Chat* chatInfo = (MessageInfo_Chat*)info;
+		//메모리 중에서 제가 처리해야하는 메모리까지만!
+		char* sendResult = new char[currentLength + 4];
+		byteConvertor.uShortInteger[0] = (short)MessageType::Chat;
+		//							    전체 메시지 길이엥서 헤더 길이 뺀 것!
+		byteConvertor.uShortInteger[1] = currentLength - 4 ;
+
+		//위쪽에서 제가 새로 만든 헤더를 넣어주는 거에요!
+		for (int i = 0; i < 4; i++)
+		{
+			sendResult[i] = byteConvertor.character[i];
+		}
+		// 그다음 4바이트 에서는 유저 번호를 입력해줍니다!
+		byteConvertor.integer = fromFD;
+		// 4 ~ 7 까지는 유저 번호가 들어갑니다.
+		for (int i = 0; i < 4; i++)
+		{
+			sendResult[i + 4] = byteConvertor.character[i];
+		}
+
+		// 4칸를 추가를 해놓았기 때문에 4칸의 여유를 더 주도록 하겠습니다.
+		memcpy(sendResult + 8, message + 4, currentLength - 8);
+		//              여기                               여기       두 개가 연관되는 개수기 때문에 맟춰줍니다.
 		/*
 		memcpy(target + 20, message + 4, currentLength - 20);
 
@@ -111,9 +131,10 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 			};
 		};
 		target[19] = ':';*/
-		BroadCastMessage(target, currentLength, fromFD);
+		BroadCastMessage(sendResult, currentLength + 4, fromFD);
 
-		cout << "Message Send From " << userArray[fromFD]->GetName() << " : " << target + 4 << endl;
+		cout << "Message Send From " << userArray[fromFD]->GetName() << " : " << sendResult + 4 << endl;
+		delete sendResult;
 		break;
 	}
 	case MessageType::LogIn:
