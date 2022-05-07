@@ -81,7 +81,7 @@ int StartServer(int currentFD);
 #include "Messege.h"
 
 // 유저들의 정보를 보내는 쓰레드입니다!
-void SendThread(void* data)
+void* SendThread(void* data)
 {
 	int checkNumber;
 	while (true)
