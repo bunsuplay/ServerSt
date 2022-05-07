@@ -192,6 +192,7 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		
 		// 이제 발송합시다!
 		BroadCastMessage(broadcastResult, currentLength + 8);
+		cout << loginInfo->name << endl;
 		
 		delete broadcastResult;
 		break;
