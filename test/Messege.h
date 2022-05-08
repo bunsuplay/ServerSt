@@ -202,6 +202,10 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		byteConvertor.uShortInteger[1] = currentLength + 4;
 		//                                    유저번호 들어갈 4칸
 		for (int i = 0; i < 4; i++) broadcastResult[i] = byteConvertor.character[i];
+
+		// 유저 번호 무엇인가요?
+		byteConvertor.integer = loginInfo->userIndex;
+		for (int i = 0; i < 4; i++)broadcastResult[i + 4] = byteConvertor.character[i];
 		
 		// 이름까지 채워주기!
 		memcpy(broadcastResult + 8, loginInfo->name.c_str(), currentLength);
