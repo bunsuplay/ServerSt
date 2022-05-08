@@ -44,6 +44,7 @@ public:
 	MessageType type;
 	int length;
 	int userIndex;
+
 };
 
 class MessageInfo_Login : public MessageInfo
