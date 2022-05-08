@@ -77,6 +77,7 @@ public:
 
 class MessageInfo_Input : public MessageInfo
 {
+public:
 	InputType type;
 	MessageInfo_Input(InputType wantType, int targetUser)
 	{
