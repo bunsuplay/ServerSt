@@ -36,7 +36,7 @@ enum class InputType
 	Button1,
 	Button2,
 
-}
+};
 
 class MessageInfo
 {
