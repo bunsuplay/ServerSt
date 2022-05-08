@@ -86,7 +86,6 @@ void* SendThread(void* data)
 	int checkNumber;
 	while (true)
 	{
-		cout << "Looping...." << endl;
 		checkNumber = 0;
 		// 유저 전에 돌아주기!
 		for (int i = 1; i < MAX_USER_NUMBER; i++)
