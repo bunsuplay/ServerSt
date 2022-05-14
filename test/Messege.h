@@ -8,8 +8,15 @@ void DebugMessage(char* message)
 		byteConvertor.character[i] = message[i];
 	};
 
+	unsigned short type = byteConvertor.uShortInteger[0];
+	
+	// 타입이 0이니까 아무것도 없겠죠?
+	if (type == 0)
+	{
+		return;
+	}
 	//  타입
-	cout << "[Type :" << byteConvertor.uShortInteger[0] << "] ";
+	cout << "[Type :" << type << "] ";
 	
 	// 길이
 	unsigned short length = byteConvertor.uShortInteger[1];
@@ -253,7 +260,6 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		break;
 	case MessageType::Input:
 	{
-		cout << "input incomming" << endl;
 		currentLength += 4;
 		MessageInfo_Input* inputInfo = (MessageInfo_Input*)info;
 		char* broadcastResult = new char[12];
