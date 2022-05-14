@@ -1,3 +1,28 @@
+//메시지를 전달 받아서 바이트 단위로 분석해주는 녀석
+// 메시지 길이나 타입을 읽고 돌려 드립니다.
+void DebugMessage(char* message)
+{
+	// 처음 메시지를 읽음
+	for (int i = 0; i < 4; i++)
+	{
+		byteConvertor.character[i] = message[i];
+	};
+
+	//  타입
+	cout << "[Type :" << byteConvertor.uShortInteger[0] << "] ";
+	
+	// 길이
+	unsigned short length = byteConvertor.uShortInteger[1];
+	cout << "[lenght :" << length << "] ";
+
+	// 전부 긁어 오기
+	for (int i = 0; i < length; i++)
+	{
+		cout<<"["<<	message[i + 4]<< "]";
+	}
+	cout << endl;
+};
+
 bool SendMessage(char* message, int length, int userNumber)
 {
 	//서버가 무언가 보낼 때 "적어 주는 거"에요 그래서 Write라고 부르고
@@ -68,7 +93,7 @@ MessageInfo* ProcessMessage(char* input, int userIndex)
 	//메시지타입		길이
 	//[][]			[][]
 
-	cout << byteConvertor.integer << endl;
+	DebugMessage(input);
 
 	MessageInfo* result;
 	//메시지 타입에 따라서 내용 넣어주기!
