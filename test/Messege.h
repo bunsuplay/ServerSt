@@ -271,7 +271,7 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		byteConvertor.integer = inputInfo->userIndex;
 		for (int i = 0; i < 4; i++) broadcastResult[i + 4] = byteConvertor.character[i];
 
-		byteConvertor.integer = (int)inputInfo->type;
+		byteConvertor.integer = (int)inputInfo->currentType;
 		for (int i = 0; i < 4; i++) broadcastResult[i + 8] = byteConvertor.character[i];
 
 		BroadCastMessage(broadcastResult, 12);
