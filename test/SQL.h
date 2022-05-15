@@ -10,7 +10,7 @@
 MYSQL* SQLConnection;
 
 // SQL한테 ;"질문"을 합니다! SQL은 저희한테 "대답" 해주죠!
-MySQL_RES* SQLResponse;
+MYSQL_RES* SQLResponse;
 
 //검색을 해서 결과를 나온 줄을 여기에다가 둡시다!
 MYSQL_ROW resultRow;
