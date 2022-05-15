@@ -79,6 +79,7 @@ int StartServer(int currentFD);
 #include "User.h"
 #include "Messageinfo.h"
 #include "Messege.h"
+#include "SQL.h"
 
 // 유저들의 정보를 보내는 쓰레드입니다!
 void* SendThread(void* data)
@@ -299,6 +300,12 @@ int StartServer(int currentFD)
 		cout << "Cannot Create Send Thread" << endl;
 		return -1;
 	}
+	// SQL 연결 시도 해봅시다!
+	if(SQLConnect() == -1)
+	{
+		// SQL연결은 안쪽에서 왜 안되었는지 이야기 해줍니다. cout은 안할께요!
+		return -1;
+	};
 
 	cout << "Server is On the way" << endl;
 
