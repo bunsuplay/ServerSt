@@ -175,11 +175,17 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		cout << "Someone Try SignUp! Name is " << signupInfo->name << ", pw is " << signupInfo->password;
 		cout << ", nicname is " << signupInfo->nicname << endl;
 
+
 		string selectWhere = "ID = \"" + +"\"";
+		SQLSelect("crtification", "*", selectWhere);
+
+		resultRow = mysql_fetch_row(SQLResponse);
+		
 		// 쿼리를 해보았는데 대상이 있네요!
-		if (mysql_fetch_row(SQLResponse) != nullptr)
+		if (resultRow != nullptr)
 		{
-			cout << signupInfo->name << " was already in Database" << endl;
+			cout << resultRow[0] << " was already in Database" << endl;
+			break;
 		}
 
 		string columns[3];
