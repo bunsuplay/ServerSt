@@ -1,126 +1,304 @@
-
-enum class MessageType
+//메시지를 전달 받아서 바이트 단위로 분석해주는 녀석
+// 메시지 길이나 타입을 읽고 돌려 드립니다.
+void DebugMessage(char* message)
 {
-	LogIn,
-	LogOut,
-	chat,
+	// 처음 메시지를 읽음
+	for (int i = 0; i < 4; i++)
+	{
+		byteConvertor.character[i] = message[i];
+	};
 
-	Length,// 제가 가진 메시지 타입의 개수보다 더 많은 내요잉 들어오면 무시!
+	unsigned short type = byteConvertor.uShortInteger[0];
+	
+	// 타입이 0이니까 아무것도 없겠죠?
+	if (type == 0)
+	{
+		return;
+	}
+	//  타입
+	cout << "[Type :" << type << "] ";
+	
+	// 길이
+	unsigned short length = byteConvertor.uShortInteger[1];
+	cout << "[lenght :" << length << "] ";
+
+	// 전부 긁어 오기
+	for (int i = 0; i < length; i++)
+	{
+		cout<<"["<<	(int)message[i + 4]<< "]";
+	}
+	cout << endl;
 };
 
-// 통합! 이라고 하는 것이죠!\
-// Struct랑 비슷하게 쓰실 수 있습니다.
-// 차이점이 무었이냐? 하나의 메모리를 여러가지 자료형이 공유해요!
-
-//[0][0][0][10]
-//			10 int
-//			\n	char[i]
-union ConvertionBase
+bool SendMessage(char* message, int length, int userNumber)
 {
-	unsigned int uInteger;
-	int integer;
+	//서버가 무언가 보낼 때 "적어 주는 거"에요 그래서 Write라고 부르고
+	//받을 때에는 Read하겠죠?
+	// 서버가 정보를 보내는 것은! 문제가 하나가 있습니다!
+	//이미 보내고 있는 중에는 추가적인 메시지를 보내기가 힘들어요!
+	// 지금 이거 보내고 있어서 제가 더 처리해드리기가 힘드네요!
+	// "이거 다 하고 보내드릴게요"" 라고 하면 참 좋겠지만 ! 서버는 그렇게 행동하지 않아요!
+	// " 지금 하고 있으니까 보내지 마세요!" 라고 그냥 날려버립니다!
+	// 그럼 메시지를 어덯게 보내조? 라고 생각하실 수 있죠!
+	// 메시지 큐 라고 하는 것이 중요합니다! 해당 유저에게 보내야 하는 메시지들을
+	//저장해놓는 공간이 필요해요! 보내지 못했을 때 담아두려고!
+	
+	//해당 유저의 존재할 경우에!
+	if (userArray[userNumber] != nullptr)
+	{
+		// 해당 유저 한테 메시지를 전달해주기
+		userArray[userNumber]->MessageQueue(message, length);
+	}
+	//write(sendFD, message, length);
+	return true;
+}
 
-	float floating;
-
-	char character[4];
-
-	short shortInteger[2];
-	unsigned short ushortInteger[2];
-};
-ConvertionBase byteConvertor;
-
-struct MessageInfo
-{
-	MessageType type;
-	int length;
-};
-//                                                 본인에게 보내기는 기본적으로 true에요!
-//												그럼뭐.. 체크안해도 되겠죠!
-//												체크하려면 FD가 설정되어야 되니까!\
-//												sendSelf를 false로 하고 싶으면 sendFD도 
+//                                              본인에게 보내기는 기본적으로 true에요~!
+//												그럼 뭐.. 체크안해도 되겠죠!
+//												체크하려면 FD가 설정되어야 되니까!
+//												sendSelf를 false로 하고 싶으면 sendFD도
 //												꼭 정해야 할 겁니다!
 void BroadCastMessage(char* message, int length, int sendFD = -1, bool sendSelf = true)
 {
-	//저희는 유저의 인원수를 알고 있습니다.
-	// 끝까지 다 돌지 않아도 유저한테 다 전달을 했다면
-	// 굳이 뭐.. 더 돌 필요 있나!
-	// 보낼 때마나 send를 1씰 늘려주고, 유저수만큼 보냈다면 끝내기!
-	// sendSelf가 false면 -> 본인한테 보내주는 게 아니면! 보내야 하는 유저 개수를
-	// 수정해줘야 하겠죠! 본인한테 보내준 셈 칩시다!
-	// 반복문이 한 명 덜 줬는데.. 누구지..? 하면서 끝까지 갈 거에요! 그거 막아주기!
-	int send = sendSelf ? 0 : 1;
-	//          조건?    ture  : false
-	//        본인한테 보냄?  0명보냈다! : 1명 보냈놨다!
+	//저희는 유저의 인원수를 알고 있습니다! 그 말은 곧,
+	//끝까지 다 돌지 않아도 유저한테 다 전달을 했다면
+	//굳이 뭐.. 더 돌 필요 있나!
+	//보낼 때마다 send를 1씩 늘려주고, 유저수만큼 보냈다면 끝내기!
 
-	// 0번은 리슨 소켓!  최대치까지 갔거나 ,또는   현재 유저 수만큼 보냈다면!
-	for (int i = 1; i < MAX_USER_NUMBER; i++) // || send >= currentUserNumber; i++
+	//sendSelf가 false면 -> 본인한테 보내주는 게 아니면! 보내야 하는 유저 개수를
+	//수정해줘야 하겠죠! 본인한테 보내준 셈 칩시다!
+	//반복문이 한 명 덜 줬는데.. 누구지..? 하면서 끝까지 갈 거에요! 그거 막아주기!
+	int send = sendSelf ? 0 : 1;
+	//			 조건   ? true : false
+	//     본인한테 보냄?  아무한테도 아직 안보냈다! : 1명 보내놨다!
+
+	// 0번은 리슨 소켓!   최대치까지 갔거나, 또는 현재 유저 수만큼 보냈다면!
+	for (int i = 1; i < MAX_USER_NUMBER; i++)
 	{
-		// 본인한테 안 보낼거임! 이라고 할때 밥아온 정보가 있다면 넘어가기!
+		//본인한테 안 보낼거임! 이라고 할 때 받아온 정보가 있다면 넘어가기!
 		if (!sendSelf && i == sendFD) continue;
 
+		//대상이 없는데 보낼 순 없겠죠?
 		if (pollFDArray[i].fd != -1)
 		{
-			// 서버가 무언가 보낼 때 "적어 주는 거"에요 그래서 wirte라고 부르고
-			// 받을 때에는 Read하겠죠?
-			//    대상의  소켓       메시지,     길이
-			if (write(pollFDArray[i].fd, message, length))
-			{
-				//보냈다!
-				if (++send >= currentUserNumber) break;
-			};
+			//           메시지,   길이,   대상
+			SendMessage(message, length, i);
 
+			//보냈다!   그랬더니 다 보냄! 이라고 했을 때 돌려주기!
+			if (++send >= currentUserNumber) break;
 		};
 	};
 }
 
-//메시지를 구분하는 용도					길이 받을 int주세요!
-MessageInfo ProcessMessage(char input[4])
+//메시지를 구분하는 용도                  이걸 준 유저
+MessageInfo* ProcessMessage(char* input, int userIndex)
 {
 	for (int i = 0; i < 4; i++)
 	{
 		byteConvertor.character[i] = input[i];
+	};
+	//메시지타입		길이
+	//[][]			[][]
 
+	DebugMessage(input);
+
+	MessageInfo* result;
+	//메시지 타입에 따라서 내용 넣어주기!
+	switch ((MessageType)byteConvertor.shortInteger[0])
+	{
+	case MessageType::EndOfLine:return nullptr;
+
+	case MessageType::LogIn:	result = new MessageInfo_Login(input, userIndex);
+		break;
+	case MessageType::Chat:		result = new MessageInfo_Chat(input, userIndex);
+		break;
+	case MessageType::Input:
+		// 4번째 칸부터 제가 입력 타입을 적어 놓았습니다!
+		for (int i = 0; i < 4; i++) byteConvertor.character[i] = input[i + 4];
+		result = new MessageInfo_Input((InputType)byteConvertor.integer, userIndex);
+		break;
+	default:					result = new MessageInfo();
+								result->type = MessageType::Unknown;
 	}
-	// 메시지타입    길이
-	// [][]			[][]
-
-	MessageInfo result;
-
-	result.type =  (MessageType)byteConvertor.shortInteger[0]; // 타입도 돌려주기
-	result.length =  byteConvertor.shortInteger[1] +4; // 길이를 주고
+	result->length = byteConvertor.shortInteger[1] + 4;			//길이도 줍시다!
 
 	return result;
 }
 
-int translateMessage(int formFD, char* message, int messageLength ,MessageInfo info)
+int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* info)
 {
-	//전체 길이와 메시지 길이 둘 중에 작은 값으로!
-	int currentLength = min(messageLength, info.length);
-	
-	//메모리 중에서 제가 처리해야하는 메모리까지만!
-	char* target = new char[currentLength];
+	//아무 것도 없는데요?  //끝까지 이동!
+	if (info == nullptr) return MAX_BUFFER_SIZE;
 
-	memcpy(target, message, currentLength);
+	//전체 길이와 하나의 메시지 길이 둘 중에 작은 값으로!
+	int currentLength = min(messageLength, info->length);
 	
-	// 타입에 따라 다른행동
-	switch (info.type)
+
+	//타입에 따라 다른 행동!
+	switch (info->type)
 	{
-	case MessageType::chat:
-		BroadCastMessage(target, currentLength, formFD);
+	case MessageType::Chat:
+	{
+		MessageInfo_Chat* chatInfo = (MessageInfo_Chat*)info;
+		//메모리 중에서 제가 처리해야하는 메모리까지만!
+		char* sendResult = new char[currentLength + 4];
+		byteConvertor.uShortInteger[0] = (short)MessageType::Chat;
+		//							    전체 메시지 길이엥서 헤더 길이 뺀 것!
+		byteConvertor.uShortInteger[1] = currentLength - 4 ;
+
+		//위쪽에서 제가 새로 만든 헤더를 넣어주는 거에요!
+		for (int i = 0; i < 4; i++)
+		{
+			sendResult[i] = byteConvertor.character[i];
+		}
+		// 그다음 4바이트 에서는 유저 번호를 입력해줍니다!
+		byteConvertor.integer = fromFD;
+		// 4 ~ 7 까지는 유저 번호가 들어갑니다.
+		for (int i = 0; i < 4; i++)
+		{
+			sendResult[i + 4] = byteConvertor.character[i];
+		}
+
+		// 4칸를 추가를 해놓았기 때문에 4칸의 여유를 더 주도록 하겠습니다.
+		memcpy(sendResult + 8, message + 4, currentLength - 4);
+		//              여기                               여기       두 개가 연관되는 개수기 때문에 맟춰줍니다.
+		/*
+		memcpy(target + 20, message + 4, currentLength - 20);
+
+		byteConvertor.uShortInteger[0] = (short)MessageType::Chat;
+		byteConvertor.uShortInteger[1] = currentLength;
+
+		for (int i = 0; i < 4; i++)
+		{
+			target[i] = byteConvertor.character[i];
+		};
+		string fromName = userArray[fromFD]->GetName();
+		for (int i = 4; i < 20; i++)
+		{
+			if (i > fromName.size())
+			{
+				target[i] = 32;//스페이스바!
+			}
+			else
+			{
+				target[i] = fromName[i - 4];
+			};
+		};
+		target[19] = ':';*/
+		BroadCastMessage(sendResult, currentLength + 4, fromFD);
+
+		cout << "Message Send From " << userArray[fromFD]->GetName() << " : " << sendResult + 8 << endl;
+		delete sendResult;
 		break;
+	}
 	case MessageType::LogIn:
+	{
+		MessageInfo_Login* loginInfo = (MessageInfo_Login*)info;
+
+		cout << "Someone Try Login! Name is " << loginInfo->name << "!!" << endl;
+		//           유저번호  성공여부(로그인 성공 / 중복 로그인 / 신규 로그인)
+		//[][] [][]  [][][][] [][]
+		char sendResult[9] = { 0 };
+
+		byteConvertor.uShortInteger[0] = (short)MessageType::LogIn;
+		byteConvertor.uShortInteger[1] = 5;
+
+		for (int i = 0; i < 4; i++)
+		{
+			sendResult[i] = byteConvertor.character[i];
+		};
+
+		sendResult[8] = userArray[fromFD]->LogIn(loginInfo->name);
+
+		//로그인 정보에서 이름을 받아와서 시도해봅니다!
+		switch (sendResult[8])
+		{
+		case 0:  cout << "Login Succeed"      << endl; break;
+		case 1:  cout << "invalide Password"  << endl; break;
+		case 2:  cout << "Already Logined"    << endl; break;
+		case 3:  cout << "Non-evist ID"       << endl; break;
+		case 4:  cout << "ID Not Fit In Form" << endl; break;
+		default: cout << "Unkown Error"       << endl; break;
+		}
+		
+		
+		// 메시지를 성공 여부를 보내주는 것
+		SendMessage(sendResult, 9, fromFD);
+
+		// 로그인이 실패한 경우에는 다른 사람들한테 아무 말도 안해도 괜찮아요!
+		if (sendResult[8] != 0) break;
+
+		// 다른 사람한테 보내줄 내용!
+		char* broadcastResult;
+
+		int currentLength = 0;
+		// 글자 끝이 나오지 않았다!
+		while (loginInfo->name[currentLength] != '\0')
+		{
+			++currentLength;// 글자 끝이 나올 때까지 돌려서 재어보기!
+		};
+
+		// 일반 적인 내용 [][] [][] [][][][] -> [][][][][[][][][][]
+		broadcastResult = new char[currentLength + 8];
+		byteConvertor.uShortInteger[0] = (short)MessageType::LogIn;
+		byteConvertor.uShortInteger[1] = currentLength + 4;
+		//                                    유저번호 들어갈 4칸
+		for (int i = 0; i < 4; i++) broadcastResult[i] = byteConvertor.character[i];
+
+		// 유저 번호 무엇인가요?
+		byteConvertor.integer = loginInfo->userIndex;
+		for (int i = 0; i < 4; i++)broadcastResult[i + 4] = byteConvertor.character[i];
+		
+		// 이름까지 채워주기!
+		memcpy(broadcastResult + 8, loginInfo->name.c_str(), currentLength);
+		
+		// 이제 발송합시다!
+		BroadCastMessage(broadcastResult, currentLength + 8);
+		cout << loginInfo->name << endl;
+		
+		delete broadcastResult;
 		break;
+	}
 	case MessageType::LogOut:
 		break;
+	case MessageType::Input:
+	{
+		currentLength += 4;
+		MessageInfo_Input* inputInfo = (MessageInfo_Input*)info;
+		char* broadcastResult = new char[12];
+
+
+
+		byteConvertor.uShortInteger[0] = (short)MessageType::Input;
+		byteConvertor.uShortInteger[1] = 8;
+		for (int i = 0; i < 4; i++) broadcastResult[i] = byteConvertor.character[i];
+
+		byteConvertor.integer = inputInfo->userIndex;
+		for (int i = 0; i < 4; i++) broadcastResult[i + 4] = byteConvertor.character[i];
+
+		byteConvertor.integer = (int)inputInfo->currentType;
+		for (int i = 0; i < 4; i++) broadcastResult[i + 8] = byteConvertor.character[i];
+
+		BroadCastMessage(broadcastResult, 12);
+		delete[] broadcastResult;
+		break;
+	}
+
+	case MessageType::EndOfLine:
+		return MAX_BUFFER_SIZE; //최대치까지 밀어서 그 뒤에 메시지가 더 없다고 알려줍니다!
+
 	default:
 		break;
 	}
 
-	//사실 메시지같은 경우는 하나씩 보내면 조금 효율이 떨어집니다.
-	// 보낼 수 있을 때 여러개를 같이 보내는 게 좋습니다.
-	// 모아두었다가 보내는 개념!
-	// 전체 메시지 길이 - 지금 확인한 메시지 길이
-	// 아직 뒤에 메시지가 더 있어요! 라고 하는 걸 확인할 수 있죠!
-	// 그래서 처리한 길이를 여기서 확인하고 갈게요!
+	//메시지 처리 완료!
+	delete info;
+
+	//사실 메시지같은 경우는 하나씩 보내면 조금 효율이 떨어집니다 ㅎㅎ
+	//보낼 수 있을 때 여러개를 같이 보내는 게 좋습니다!
+	//모아두었다가 보내는 개념!
+	//전체 메시지 길이 - 지금 확인한 메시지 길이!
+	//아직 뒤에 메시지가 더 있어요! 라고 하는 걸 확인할 수 있죠!
+	//그래서 처리한 길이를 여기에서 확인하고 갈게요!
 	return currentLength;
 }

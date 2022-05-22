@@ -3,7 +3,11 @@
 //외부에서 접속을 할 때에는 퍼블릭IP가 필요하지만, 서버를 켤 때에는
 //내부 공유기한테 개인IP로 열 거에요! 라고 이야기할 필요가 있습니다!
 //내부 IP를 여기에다가 입력해주시면 됩니다!
+<<<<<<< HEAD
 #define SERVER_PRIVATE_IP "172.31.41.59"
+=======
+#define SERVER_PRIVATE_IP "172.31.37.105"
+>>>>>>> 1645a97dac9399050d6e13f42756a22b645eee38
 
 //컴퓨터에는 동시에 여러개의 프로그램이 작동하고 있습니다!
 //엘든링을 하고 있었어요! 네트워크를 사용하고 있죠!
@@ -11,7 +15,11 @@
 //"포트"라고 하는 것이 누구 메시지인지 구분할 수 있게 해줘요!
 //몇 번 포트로 주면 이 프로그램에 줄게요^^ 라고 하는 느낌!
 //49152 ~ 65535 가 자유롭게 사용할 수 있는 "동적 포트"니까 이 사이에 있는 값으로 조정해줄게요!
+<<<<<<< HEAD
 #define SERVER_PORT 55123
+=======
+#define SERVER_PORT 54177
+>>>>>>> 1645a97dac9399050d6e13f42756a22b645eee38
 
 //서버에서는 메시지를 보낼 겁니다!
 //메시지 무한정 보낼 수는 없어요! 네트워크 계층에는 물리계층이 있는데 물리적인 한계가 존재할 수밖에 없죠!
@@ -22,10 +30,17 @@
 #define MAX_USER_NUMBER 100
 
 //메시지를 보내는데 일정한 간격을 두고 보냅니다!
+<<<<<<< HEAD
 #define SEND_TICK_RATE 30
 
 //1초에 얼마나 보내는지!
 #define SEND_PER_SECONDS 1000 / SEND_TICK_RATE
+=======
+#define SEND_TICN_RATE 30
+
+//1초에 얼마나 보내는지!
+#define SEND_PER_SECONDS 1000 / SEND_TICN_RATE
+>>>>>>> 1645a97dac9399050d6e13f42756a22b645eee38
 
 #include <iostream>
 
@@ -64,7 +79,11 @@ char buffRecv[MAX_BUFFER_SIZE] = { 0 };
 //보낼 내용을 저장하는 공간(버퍼)
 char buffSend[MAX_BUFFER_SIZE] = { 0 };
 
+<<<<<<< HEAD
 //쓰레드 부분!
+=======
+// 쓰래드 부분
+>>>>>>> 1645a97dac9399050d6e13f42756a22b645eee38
 pthread_t sendThread;
 pthread_t commandThread;
 
@@ -76,18 +95,28 @@ int StartServer(int currentFD);
 
 //왜 #include가 여기에 있나요?
 //헤더는 복사 붙여넣기라서 여기에 있어야 위에 있는 변수들을 사용할 수 있어서 여기에다 뒀어요!
+<<<<<<< HEAD
 #include "SQL.h"
 #include "User.h"
 #include "MessageInfo.h"
 #include "Message.h"
 
 //유저들의 메시지를 보내는 스레드입니다!
+=======
+#include "User.h"
+#include "Messageinfo.h"
+#include "Messege.h"
+#include "SQL.h"
+
+// 유저들의 정보를 보내는 쓰레드입니다!
+>>>>>>> 1645a97dac9399050d6e13f42756a22b645eee38
 void* SendThread(void* data)
 {
 	int checkNumber;
 	while (true)
 	{
 		checkNumber = 0;
+<<<<<<< HEAD
 		//유저 전체 돌아주기!
 		for (int i = 1; i < MAX_USER_NUMBER; i++)
 		{
@@ -103,12 +132,33 @@ void* SendThread(void* data)
 				if (checkNumber >= currentUserNumber) break;
 			};
 		};
+=======
+		// 유저 전에 돌아주기!
+		for (int i = 1; i < MAX_USER_NUMBER; i++)
+		{
+			// 유저 있네!
+			if (userArray[i] != nullptr)
+			{
+				// 보내보자
+				userArray[i]->Send();
+
+				// 체크 했습니다!
+				++checkNumber;
+				if (checkNumber >= currentUserNumber) break;
+			};
+		};
+
+>>>>>>> 1645a97dac9399050d6e13f42756a22b645eee38
 	};
 }
 
 int main()
 {
+<<<<<<< HEAD
 	              //IPv4(4바이트짜리 IP)
+=======
+	//IPv4(4바이트짜리 IP)
+>>>>>>> 1645a97dac9399050d6e13f42756a22b645eee38
 	ListenFD.fd = socket(AF_INET, SOCK_STREAM, 0);
 	ListenFD.events = POLLIN;
 	ListenFD.revents = 0;
@@ -294,11 +344,16 @@ int StartServer(int currentFD)
 		return -1;
 	};
 
+<<<<<<< HEAD
 	//스레드를 만들어봅니다!
+=======
+	// 스레드를 만들어봅시다!
+>>>>>>> 1645a97dac9399050d6e13f42756a22b645eee38
 	if (pthread_create(&sendThread, NULL, SendThread, NULL) != 0)
 	{
 		cout << "Cannot Create Send Thread" << endl;
 		return -1;
+<<<<<<< HEAD
 	};
 
 	//SQL연결까지 시도해봅시다!
@@ -308,6 +363,16 @@ int StartServer(int currentFD)
 		return -1;
 	};
 
+=======
+	}
+	// SQL 연결 시도 해봅시다!
+	if(SQLConnect() == -1)
+	{
+		// SQL연결은 안쪽에서 왜 안되었는지 이야기 해줍니다. cout은 안할께요!
+		return -1;
+	};
+
+>>>>>>> 1645a97dac9399050d6e13f42756a22b645eee38
 	cout << "Server is On the way" << endl;
 
 	//당신은 모든 시련을 훌륭하게 이겨내셨습니다
