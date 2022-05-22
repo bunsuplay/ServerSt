@@ -185,7 +185,7 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		byteConvertor.ushortInteger[1] = 1;
 		for (int i = 0; i < 4; i++)
 		{
-			sendResult[i] = byteconvertor.character[i];
+			sendResult[i] = byteConvertor.character[i];
 		};
 		
 		// 쿼리를 해보았는데 대상이 있네요!
