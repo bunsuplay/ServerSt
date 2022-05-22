@@ -43,7 +43,7 @@ bool SQLQuery(string queryString)
 	SQLResponse = mysql_store_result(SQLConnection);
 
 	//아.. 못가져왔구나..
-	if (SQLResponse == nullptr) return false;
+	//if (SQLResponse == nullptr) return false;
 
 	//저희가 하나의 줄로 받아오도록 하면 됩니다!
 	//resultRow = mysql_fetch_row(SQLResponse);
