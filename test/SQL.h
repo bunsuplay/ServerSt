@@ -3,7 +3,8 @@
 
 #define SQL_ADDRESS "localhost"
 #define SQL_ID		"root"
-#define SQL_PW		"password"
+#define SQL_PW		"ycj650213"
+
 
 /*
 create database login_info;
@@ -41,6 +42,7 @@ bool SQLQuery(string queryString)
 
 	//쿼리를 해서 나온 결과의 상태!
 	SQLResponse = mysql_store_result(SQLConnection);
+
 	return true;
 };
 
@@ -49,6 +51,7 @@ bool SQLSelect(string tableName, string wantColumn, string conditionWhere)
 	//    원하는 열     테이블            조건
 	//SELECT * FROM certification WHERE ID = "a";
 	string queryString = "SELECT " + wantColumn;
+
 	queryString += " FROM " + tableName;
 	queryString += " WHERE " + conditionWhere + ";";
 
@@ -57,6 +60,7 @@ bool SQLSelect(string tableName, string wantColumn, string conditionWhere)
 
 bool SQLInsert(string tableName, int columnAmount, string* columnNames, int valueAmount, string* values)
 {
+
 	if (columnAmount <= 0) return false;
 	if (valueAmount <= 0) return false;
 
@@ -84,7 +88,9 @@ bool SQLInsert(string tableName, int columnAmount, string* columnNames, int valu
 
 	queryString += ");";
 
+
 	return SQLQuery(queryString);
+
 }
 
 //MYSQL에 실제로 연결하는 함수가 필요할 거에요!
@@ -98,7 +104,9 @@ int SQLConnect()
 	};
 
 	//초기화를 했으니까 그 위치에다가 "실제 연결"을 시키는 겁니다!
+
 	if (!(mysql_real_connect(SQLConnection, SQL_ADDRESS, SQL_ID, SQL_PW, NULL, 3306, NULL, 0)))
+
 	{                    //   대상 포인터   주소(내 컴퓨터) 아이디   비번          포트
 		cout << "MYSQL Connection Failed" << endl;
 		return -1;
@@ -116,6 +124,7 @@ int SQLConnect()
 
 		cout << "Table Created" << endl;
 	};
+
 
 	return 0;
 }

@@ -175,6 +175,7 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		cout << "Someone Try SignUp! Name is " << signupInfo->name << ", pw is " << signupInfo->password;
 		cout << ", nicname is " << signupInfo->nicname << endl;
 
+
 		string selectWhere = "ID = \"" + signupInfo->name + "\"";
 		SQLSelect("certification", "*", selectWhere);
 
@@ -182,16 +183,20 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 		char sendResult[5];
 		byteConvertor.uShortInteger[0] = (unsigned short)MessageType::SignUp;
 		byteConvertor.uShortInteger[1] = 1;
+
 		for (int i = 0; i < 4; i++)
 		{
 			sendResult[i] = byteConvertor.character[i];
 		};
 
+
 		//쿼리를 해보았는데 대상이 있네요!
+
 		if (resultRow != nullptr)
 		{
 			cout << resultRow[0] << " was already in Database" << endl;
 			sendResult[4] = 0;
+
 		}
 		else
 		{
@@ -205,7 +210,9 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 			values[2] = "\"" + signupInfo->nicname + "\"";
 			if (SQLInsert("certification", 3, columns, 3, values))
 			{
+
 				cout << signupInfo->name << " has Inserted to Database" << endl;
+
 				sendResult[4] = 1;
 			}
 			else
@@ -214,6 +221,7 @@ int TranslateMessage(int fromFD, char* message, int messageLength, MessageInfo* 
 			};
 		};
 		SendMessage(sendResult, 5, fromFD);
+
 		break;
 	}
 	case MessageType::LogIn:

@@ -5,12 +5,14 @@ class User
 	int fdNumber;
 	string name = "<NULL>";
 
+
 	//이건 waitSend가 부족할 때! 쓸 거에요!
 	std::queue<char*> waitQueue;
 
 	//아직 전달되지 않은 대기중인 메시지들!
 	char waitSend[MAX_BUFFER_SIZE] = { 0 };
 	//기다리고 있는 메시지의 길이!
+
 	int waitLength = 0;
 
 	//로그인이 되어있는가?
@@ -29,18 +31,22 @@ public:
 
 	void MessageQueue(char* message, int length)
 	{
+
 		//메시지 총 길이를 넘었을 때! 큐에다가 넣어주면 됩니다!
 		if (length + waitLength >= MAX_BUFFER_SIZE)
 		{
 
 		}
+
 		else //아직 메시지에 들어갈 만 해요!
 		{
 			//     비어있는 메시지 공간     메시지   길이만큼
 			memcpy(waitSend + waitLength, message, length);
 
+
 			//그 만큼 길이가 늘어났으니까!
 			waitLength += length;
+
 		};
 	}
 
@@ -121,10 +127,12 @@ public:
 		return true;
 	}
 
-	bool SetName(string wantName)
-	{
+
+	bool SetName(string wantName) 
+	{ 
 		if (!CheckNameValidate(wantName)) return false;
-		name = wantName;
+		name = wantName; 
+
 		return true;
 	};
 };
