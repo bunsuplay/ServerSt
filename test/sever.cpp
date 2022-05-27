@@ -22,10 +22,10 @@
 #define MAX_USER_NUMBER 100
 
 //메시지를 보내는데 일정한 간격을 두고 보냅니다!
-#define SEND_TICN_RATE 30
+#define SEND_TICK_RATE 30
 
 //1초에 얼마나 보내는지!
-#define SEND_PER_SECONDS 1000 / SEND_TICN_RATE
+#define SEND_PER_SECONDS 1000 / SEND_TICK_RATE
 
 #include <iostream>
 
@@ -64,7 +64,7 @@ char buffRecv[MAX_BUFFER_SIZE] = { 0 };
 //보낼 내용을 저장하는 공간(버퍼)
 char buffSend[MAX_BUFFER_SIZE] = { 0 };
 
-// 쓰래드 부분
+//쓰레드 부분!
 pthread_t sendThread;
 pthread_t commandThread;
 
@@ -76,33 +76,33 @@ int StartServer(int currentFD);
 
 //왜 #include가 여기에 있나요?
 //헤더는 복사 붙여넣기라서 여기에 있어야 위에 있는 변수들을 사용할 수 있어서 여기에다 뒀어요!
+#include "SQL.h"
 #include "User.h"
 #include "Messageinfo.h"
 #include "Messege.h"
-#include "SQL.h"
 
-// 유저들의 정보를 보내는 쓰레드입니다!
+//유저들의 메시지를 보내는 스레드입니다!
 void* SendThread(void* data)
 {
 	int checkNumber;
 	while (true)
 	{
 		checkNumber = 0;
-		// 유저 전에 돌아주기!
+		//유저 전체 돌아주기!
 		for (int i = 1; i < MAX_USER_NUMBER; i++)
 		{
-			// 유저 있네!
+			//유저 있네!
 			if (userArray[i] != nullptr)
 			{
-				// 보내보자
+				//보내보자!
 				userArray[i]->Send();
 
-				// 체크 했습니다!
+				//체크 했습니다!
 				++checkNumber;
+				//체크 다했네요!
 				if (checkNumber >= currentUserNumber) break;
 			};
 		};
-
 	};
 }
 
@@ -294,16 +294,17 @@ int StartServer(int currentFD)
 		return -1;
 	};
 
-	// 스레드를 만들어봅시다!
+	//스레드를 만들어봅니다!
 	if (pthread_create(&sendThread, NULL, SendThread, NULL) != 0)
 	{
 		cout << "Cannot Create Send Thread" << endl;
 		return -1;
-	}
-	// SQL 연결 시도 해봅시다!
-	if(SQLConnect() == -1)
+	};
+
+	//SQL연결까지 시도해봅시다!
+	if (SQLConnect() == -1)
 	{
-		// SQL연결은 안쪽에서 왜 안되었는지 이야기 해줍니다. cout은 안할께요!
+		//SQL연결은 안쪽에서 왜 안되었는지 이야기해줍니다! cout은 안할게요!
 		return -1;
 	};
 

@@ -5,13 +5,12 @@ class User
 	int fdNumber;
 	string name = "<NULL>";
 
-	//이건 waitSend가 부족할때 사용
+	//이건 waitSend가 부족할 때! 쓸 거에요!
 	std::queue<char*> waitQueue;
 
-	// 아직 전달되진 않은 대기중인 메시지들
+	//아직 전달되지 않은 대기중인 메시지들!
 	char waitSend[MAX_BUFFER_SIZE] = { 0 };
-	
-	//기다리고 있는 메시지의 길이
+	//기다리고 있는 메시지의 길이!
 	int waitLength = 0;
 
 	//로그인이 되어있는가?
@@ -30,49 +29,73 @@ public:
 
 	void MessageQueue(char* message, int length)
 	{
-		// 메시지를 줄 길이를 넘었을때! 큐에다가 넣어주면 됩니다!
+		//메시지 총 길이를 넘었을 때! 큐에다가 넣어주면 됩니다!
 		if (length + waitLength >= MAX_BUFFER_SIZE)
 		{
 
 		}
-		else // 아직 메시지에 들어갈 만 해요!
+		else //아직 메시지에 들어갈 만 해요!
 		{
-			//   비어있는 메지지 공간      메시지      길이만큼
+			//     비어있는 메시지 공간     메시지   길이만큼
 			memcpy(waitSend + waitLength, message, length);
-			
-			// 그 만큼 길이가 늘어났으니까!
-			waitLength += length;
-		}
-	}
 
-	// 메시지 큐에 있는 내용을 전달하는 거에요!
-	void Send()
-	{
-		// 보내야 하는 길이가 아직 남았다고 했을때
-		if (waitLength > 0)
-		{
-			//write는요 데이터를 보냈을 때 보낸 길이를 다시 저희한테 알려줍니다!
-			// 0보다 크다고 한다면 메시지가 잘 보내졌다고 볼 수 있지 않을까요?
-			if (write(pollFDArray[fdNumber].fd, waitSend,waitLength))
-			{
-				// 보낼 내용도 0으로 추가!
-				memset(waitSend, 0, waitLength);
-				//초기화
-				waitLength = 0;
-			};
-			//if문에 들어가지 못했다는 거는 보내지 못했다는 거니까! 초기화는 하지 않습니다! 
+			//그 만큼 길이가 늘어났으니까!
+			waitLength += length;
 		};
 	}
 
-	int LogIn(string wantName)
+	//메시지 큐에 있는 내용을 전달하는 거에요!
+	void Send()
+	{
+		//보내야 하는 길이가 아직 남아있다고 했을 때!
+		if (waitLength > 0)
+		{
+			//write는요! 데이터를 보냈을 때! 보낸 길이를 다시 저희한테 알려줍니다!
+			//0보다 크다고 한다면 메시지가 잘 보내졌다고 볼 수 있지 않을까요?
+			if (write(pollFDArray[fdNumber].fd, waitSend, waitLength) > 0)
+			{
+				//보낼 내용도 0으로 초기화!
+				memset(waitSend, 0, waitLength);
+				//초기화!
+				waitLength = 0;
+			};
+			//if문에 들어가지 못했다는 거는 보내지 못했다는 거니까! 초기화는 하지 않습니다!
+		};
+	}
+
+	int LogIn(string wantName, string wantPassword)
 	{
 		//여기에서는 저희가 중복 로그인이라고 하는 것을 방지해줄 필요가 있습니다!
 		//저희가 같은 이름의 사람이 들어온다거나 이 사람이 이미 로그인 되어있다고 한 상태에서
 		//다시 로그인을 시도했을 때 문제가 생겼다고 알려줄 수 있겠죠!
 		if (isLogin) return 2;
 
+		//해당 아이디의 유저를 찾습니다!
+		string selectWhere = "ID = \"" + wantName + "\"";
+		SQLSelect("certification", "*", selectWhere);
+
+		//그래서 정보가 있는지 확인해보는 거구요!
+		resultRow = mysql_fetch_row(SQLResponse);
+
+		//정보가 없어요!
+		if (resultRow == nullptr) return 3;
+
+		//제가 받은 비밀번호하고 데이터에 있던 비밀번호하고 비교를 하는 거에요!
+		if (resultRow[1] == wantPassword)
+		{
+			//닉네임을 그대로 가져오도록 합시다!
+			name = resultRow[2];
+			//아이디도 있고, 비밀번호도 맞으면 로그인 성공이지 뭐!
+			return 0;
+		}
+		else
+		{
+			//비번 틀렸는데요?
+			return 1;
+		};
+
 		//이름 설정에 실패했습니다!
-		if (!SetName(wantName)) return 4;
+		//if (!SetName(wantName)) return 4;
 
 		return 0;
 	};
