@@ -1,6 +1,6 @@
 #pragma once
 
-static enum CommandType
+public enum CommandType
 {
 	Error,
 	Quit,
