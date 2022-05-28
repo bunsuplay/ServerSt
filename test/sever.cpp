@@ -265,6 +265,12 @@ int main()
 		//엇.. 누가 있어? 닫아!
 		if (pollFDArray[i].fd != -1) close(pollFDArray[i].fd);
 	};
+
+	// 두개의 서버를 전부 꺼줍니다.!
+	void* currentResult;
+	pthread_join(SendThread, currentResult);
+	pthread_join(CommandThread, currentResult);
+
 	return -4;
 }
 
