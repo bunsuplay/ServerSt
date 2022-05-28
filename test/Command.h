@@ -61,7 +61,7 @@ void* CommandThread(void* data)
 			if (input[i] >= 'a' || input[i] <= 'z')
 			{
 				// 소문자를 대문자로 만들어 줍시다!
-				input[i] -= 'A' - 'a';
+				input[i] += 'A' - 'a';
 			}
 		}
 
