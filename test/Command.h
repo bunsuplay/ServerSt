@@ -66,6 +66,7 @@ void* CommandThread(void* data)
 		}
 
 		string currentWord;
+		currentWord.clear();
 		for (int i = 0; i <= input.size(); i++)
 		{
 			//글자가 끝나거나 스페이스가 나오면 그자리에서 끊고 , 그자리에서 알아보기!
