@@ -268,8 +268,8 @@ int main()
 
 	// 두개의 서버를 전부 꺼줍니다.!
 	void* currentResult;
-	pthread_join(SendThread, &currentResult);
-	pthread_join(CommandThread, &currentResult);
+	pthread_join(sendThread, &currentResult);
+	pthread_join(commandThread, &currentResult);
 
 	return -4;
 }
