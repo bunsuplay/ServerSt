@@ -1,6 +1,6 @@
 #pragma once
 
-public enum CommandType
+ enum CommandType
 {
 	Error,
 	Quit,
@@ -80,4 +80,6 @@ void* CommandThread(void* data)
 		//글자를 전부 파악했으니 실행
 		ExitcutComaand();
 	};
+
+	return nullptr;
 }
