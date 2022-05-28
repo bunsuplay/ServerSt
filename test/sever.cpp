@@ -122,6 +122,8 @@ void* SendThread(void* data)
 			};
 		};
 	};
+
+	return nullptr;
 }
 
 int main()
@@ -338,7 +340,8 @@ int StartServer(int currentFD)
 		return -1;
 	};
 
-
+	// 처음에
+	isRunnig = true;
 	cout << "Server is On the way" << endl;
 
 	//당신은 모든 시련을 훌륭하게 이겨내셨습니다
