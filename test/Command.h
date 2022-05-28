@@ -14,6 +14,8 @@
 
  void CalculateCommand(string word)
  {
+	 
+
 	 if (currentIndex == 0)
 	 {
 		 if (word == "QUIT" || word == "EXIT" || word == "END" || word == "CLOSE")
