@@ -280,8 +280,11 @@ int main()
 	// 시작하자마자 파일을 닫아 버릴수 있음!
 	while (isRunnig)
 	{
-		gettimefday(&currentTime, NULL);
-		cout << currentTime.tv_usec << endl;
+		gettimeofday(&currentTime, NULL);
+
+		lastCheck_uSec = currentTime.tv_usec;
+
+		cout << currentTime.tv_usec  - lastCheck_uSec<< endl;
 	};
 
 	//리슨 소켓 닫고
