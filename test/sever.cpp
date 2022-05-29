@@ -324,6 +324,7 @@ int main()
 	//리슨 소켓 닫고
 	close(ListenFD.fd);
 
+	// 전체 소켓을 받아주기!
 	for (int i = 0; i < MAX_USER_NUMBER; i++)
 	{
 		//엇.. 누가 있어? 닫아!
@@ -331,7 +332,7 @@ int main()
 		{
 			// 강제종료!   현제소켓을        rd읽기  wr쓰기
 			shutdown(pollFDArray[i].fd, SHUT_RDWR);
-			close(pollFDArray[i].fd);
+			//close(pollFDArray[i].fd);
 
 		};
 	};
