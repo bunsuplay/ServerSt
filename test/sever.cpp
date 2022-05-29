@@ -327,8 +327,13 @@ int main()
 	for (int i = 0; i < MAX_USER_NUMBER; i++)
 	{
 		//엇.. 누가 있어? 닫아!
-		//if (pollFDArray[i].fd != -1)
+		if (pollFDArray[i].fd != -1)
+		{
+			// 강제종료!   현제소켓을        rd읽기  wr쓰기
+			shotdown(pollFDArray[i].fd, SHUT_RDWR);
 			close(pollFDArray[i].fd);
+
+		};
 	};
 
 	// 두개의 서버를 전부 꺼줍니다.!
