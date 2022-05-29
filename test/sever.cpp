@@ -327,14 +327,15 @@ int main()
 	for (int i = 0; i < MAX_USER_NUMBER; i++)
 	{
 		//엇.. 누가 있어? 닫아!
-		if (pollFDArray[i].fd != -1) close(pollFDArray[i].fd);
+		//if (pollFDArray[i].fd != -1)
+			close(pollFDArray[i].fd);
 	};
 
 	// 두개의 서버를 전부 꺼줍니다.!
 	void* currentResult;
+	pthread_cancel(receiveTread);
 	pthread_join(sendThread, &currentResult);
 	pthread_join(commandThread, &currentResult);
-	pthread_cancel(receiveTread);
 	//pthread_join(receiveTread, &currentResult);
 
 	return -4;
