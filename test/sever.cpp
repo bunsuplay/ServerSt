@@ -290,7 +290,7 @@ int main()
 
 		totalTime += current_uSec / 1000000.0;
 
-		cout << currentTime<< endl;
+		cout << totalTime<< endl;
 
 		lastCheck_uSec = currentTime.tv_usec;
 	};
