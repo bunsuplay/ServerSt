@@ -222,8 +222,23 @@ void* ReceiveThread(void* data)
 void* SendThread(void* data)
 {
 	int checkNumber;
+	// 마지막으로 보낸 시간을 체크해서 현제 시간이랑 비교합니다!
+	// 그래서 보내야할 때애만 보내기
+	double lastSendTime = 0;
 	while (isRunnig)
 	{
+		// 마지막으로 보낸 시간부터 어느정도 시간이 지나야 보낼 것인가!
+		//										현재 시간이랑 비교해보았더니! 아직 덜왔는데?
+		if (lastSendTime + SEND_PER_SECONDS < totalTime)
+		{
+			continue; // 자 나가자~
+		}
+
+		//여기로 넘어왔다는 건 보낼 준비가 됬다는 거니까!
+		cout << "Sending..." << endl;
+		// 보냈으니까 시간을 적어주면 됩니다!
+		lastSendTime = totalTime;
+
 		checkNumber = 0;
 
 		//유저 전체 돌아주기!
@@ -294,10 +309,11 @@ int main()
 		// 마이너스가 되어버렸어요!
 		// 마이크로세컨드의 최대값 1000000을 더해주면 조금 더 나아질 거에욧!
 		if (current_uSec < 0) current_uSec += 1000000;
+		
+		// 지나간 신간을 총합시간에 더해줍니다!
 		totalTime += current_uSec / 1000000.0;
 
-		cout << totalTime<< endl;
-
+		//마지막으로 체크했다고 알려주기!
 		lastCheck_uSec = currentTime.tv_usec;
 	};
 
