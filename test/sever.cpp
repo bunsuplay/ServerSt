@@ -330,7 +330,7 @@ int main()
 		if (pollFDArray[i].fd != -1)
 		{
 			// 강제종료!   현제소켓을        rd읽기  wr쓰기
-			shotdown(pollFDArray[i].fd, SHUT_RDWR);
+			shutdown(pollFDArray[i].fd, SHUT_RDWR);
 			close(pollFDArray[i].fd);
 
 		};
