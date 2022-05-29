@@ -116,7 +116,7 @@ void* ReceiveThread(void* data)
 		socklen_t addressSize;
 
 		//누가 부르던데요? 0이면 아무도 대답안했다! 15라고 하면, 15명이 부른다!
-		if (result > 0)
+		if (isRunnig && result > 0)
 		{
 			//리슨 소켓에 반응 확인!
 			//누군가 접속을 시도하고 있습니다!
@@ -316,6 +316,8 @@ int main()
 		//마지막으로 체크했다고 알려주기!
 		lastCheck_uSec = currentTime.tv_usec;
 	};
+
+	write(ListenFD.fd,nullptr, 0)
 
 	//리슨 소켓 닫고
 	close(ListenFD.fd);
