@@ -31,7 +31,7 @@
 
 //                              &마이크로초
 //1초에 얼마나 보내는지! //  마이크로 세컨즈는 1/1000/1000
-#define SEND_PER_SECONDS 1000000 / SEND_TICK_RATE
+#define SEND_PER_SECONDS 1.0 / SEND_TICK_RATE
 
 
 #include <iostream>
@@ -81,6 +81,9 @@ pthread_t receiveTread;
 
 //현재 유저 수
 unsigned int currentUserNumber = 0;
+
+// 서버가 구동한치 몇초가 지났는가?
+double totalTime = 0;
 
 bool isRunnig = false;
 
@@ -281,8 +284,13 @@ int main()
 	while (isRunnig)
 	{
 		gettimeofday(&currentTime, NULL);
+		
+		// 지난 시간은 이정도 되요!
+		current_uSec = currentTime.tv_usec - lastCheck_uSec;
 
-		cout << currentTime.tv_usec  - lastCheck_uSec<< endl;
+		totalTime += current_uSec / 1000000.0;
+
+		cout << currentTime<< endl;
 
 		lastCheck_uSec = currentTime.tv_usec;
 	};
