@@ -98,7 +98,7 @@ int StartServer(int currentFD);
 #include "Command.h"
 
 
-void* receiveThread(void* data)
+void* ReceiveThread(void* data)
 {
 	// 서버가 도는지 확인
 	while (isRunnig)
@@ -210,7 +210,7 @@ void* receiveThread(void* data)
 			};
 		};
 	};
-	return nullptr
+	return nullptr;
 }
 
 
@@ -248,7 +248,7 @@ int main()
 	// 서버가 언제 시작하는지!
 	struct timeval startTime;
 	//스타트에 마이크로 세컨드를 줌
-	startTime.tv_usce = 0;
+	startTime.tv_usec = 0;
 	// 현재 시간!
 	struct timeval currentTime;
 
@@ -280,6 +280,7 @@ int main()
 	// 시작하자마자 파일을 닫아 버릴수 있음!
 	while (isRunnig)
 	{
+		gettimefday(&currentTime, NULL);
 		cout << currentTime.tv_usec << endl;
 	};
 
@@ -379,7 +380,7 @@ int StartServer(int currentFD)
 
 	};
 
-	if (pthread_create(&receiveThread, NULL, receiveThread, NULL) != 0)
+	if (pthread_create(&receiveThread, NULL, ReceiveThread, NULL) != 0)
 	{
 		cout << "Cannot Create Command Thread" << endl;
 		isRunnig = false;
