@@ -286,8 +286,14 @@ int main()
 		gettimeofday(&currentTime, NULL);
 		
 		// 지난 시간은 이정도 되요!
+		// 마지막  세컨드는 999999였다고 생각해봅시다!
+		//마이크로 세컨드는 백만이 채워졌을때 세컨드로 넘어감니다! 1초죠?
+		// 1초로 넘어가면 마이크로세컨드는 0이 됩니다!
+		//                           0   -    999999
 		current_uSec = currentTime.tv_usec - lastCheck_uSec;
-
+		// 마이너스가 되어버렸어요!
+		// 마이크로세컨드의 최대값 1000000을 더해주면 조금 더 나아질 거에욧!
+		if (current_uSec < 0) current_uSec += 1000000;
 		totalTime += current_uSec / 1000000.0;
 
 		cout << totalTime<< endl;
