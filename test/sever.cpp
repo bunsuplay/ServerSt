@@ -383,7 +383,7 @@ int StartServer(int currentFD)
 
 	};
 
-	if (pthread_create(&receiveThread, NULL, ReceiveThread, NULL) != 0)
+	if (pthread_create(&receiveTread, NULL, ReceiveThread, NULL) != 0)
 	{
 		cout << "Cannot Create Command Thread" << endl;
 		isRunnig = false;
